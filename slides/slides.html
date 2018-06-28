@@ -1,3 +1,440 @@
 <section>
 
+<h2>自己紹介</h2>
+
+<p><img src="images/icon2.jpg" alt="" style="float:right;width:200px;border:0px"></p>
+
+<ul>
+  <li>とみたまさひろ</li>
+  <li>
+    <p>長野在住プログラマー</p>
+  </li>
+  <li>Ruby</li>
+  <li>MySQL</li>
+  <li>文字化け</li>
+</ul>
+
+</section>
+<section>
+
+<p>文字化けな話ばっかりやってると<br>
+思われてるかもしれませんが<br>
+実はメールもやってます</p>
+
+</section>
+<section>
+
+<p>過去にこんな書籍出したことも</p>
+
+<p><img src="images/postfix.jpg" alt=""></p>
+
+</section>
+<section>
+
+<p>今回はメールの話</p>
+
+</section>
+<section>
+
+<h1>メールの文字化け</h1>
+
+<p>NSEG #101</p>
+
+<p>2018/06/30</p>
+
+<p>とみたまさひろ</p>
+
+</section>
+<section>
+
+<p>その昔メールは7bitデータだった</p>
+
+</section>
+<section>
+
+<p>ASCII文字しか送れなかった</p>
+
+</section>
+<section>
+
+<p>ISO-2022-JPは7bit</p>
+
+<p>お互いが了承してればISO-2022-JPで日本語を使えた</p>
+
+</section>
+<section>
+
+<p>今でもメールでISO-2022-JPが<br>
+使われてるのはその名残り</p>
+
+<p>(もう世の中Unicodeなのに…)</p>
+
+</section>
+<section>
+
+<p>でも日本語が書けるのは本文だけ</p>
+
+<p>メールのヘッダにはISO-2022-JPは書けない</p>
+
+<p>Subjectには書けるけど、From や To には書けない</p>
+
+</section>
+<section>
+
+<pre><code class="language-text">From: "display name" &lt;local@domain.name&gt;
+</code></pre>
+
+<p>「<code>"</code>」で括ればだいたいのASCII文字は書けるんだけど<br>
+ISO-2022-JPは「<code>"</code>」を含んでる<br>
+「<code>&lt;</code>」「<code>&gt;</code>」も含んでる</p>
+
+<p><code>あーいーうー</code> : <code>^[$B$"!&lt;$$!&lt;$&amp;!&lt;^[(B</code></p>
+
+</section>
+<section>
+
+<p>メールヘッダに日本語を書けなかったから<br>
+メール本文の冒頭で名乗る文化が<br>
+生まれたんじゃないかなぁ<br>
+(個人の感想です)</p>
+
+</section>
+<section>
+
+<p>MIMEの登場</p>
+
+<p>Multipurpose Internet Mail Extensions</p>
+
+<p>RFC 2045-2049</p>
+
+</section>
+<section>
+
+<p>MIME</p>
+
+<ul>
+  <li>
+    <p>ヘッダ部で非ASCII文字</p>
+  </li>
+  <li>
+    <p>添付ファイル(マルチパート)</p>
+  </li>
+</ul>
+
+</section>
+<section>
+
+<h2>Charsetの問題</h2>
+
+</section>
+<section>
+
+<p>Content-Type で文字コードを指定</p>
+
+<pre><code class="language-text">Content-Type: text/plain; charset=ISO-2022-JP
+</code></pre>
+
+</section>
+<section>
+
+<p>Charset指定と本文のエンコーディングが異なる</p>
+
+<pre><code class="language-text">Content-Type: text/plain; charset=ISO-2022-JP
+
+なぜか本文はSHIFT_JIS
+</code></pre>
+
+<p><strong>文字化け！</strong></p>
+
+</section>
+<section>
+
+<p>Charset指定が無い</p>
+
+<pre><code class="language-text">Content-Type: text/plain
+
+ASCIIのはずだけど日本語
+</code></pre>
+
+<p><strong>文字化け！</strong></p>
+
+</section>
+<section>
+
+<p>Subjectが生ISO-2022-JP</p>
+
+<pre><code>Subject: ^[$B%"%a%s%\@V$$$J$"$$$&amp;$($*^[(B
+</code></pre>
+
+<p>MIME以前</p>
+
+</section>
+<section>
+
+<p>Charset違い</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>メール上のcharset</th>
+      <th>実際のエンコーディング</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ISO-2022-JP</td>
+      <td>CP50221</td>
+    </tr>
+    <tr>
+      <td>SHIFT_JIS</td>
+      <td>CP932</td>
+    </tr>
+    <tr>
+      <td>EUC-JP</td>
+      <td>CP50932</td>
+    </tr>
+    <tr>
+      <td>GB2312</td>
+      <td>GBK</td>
+    </tr>
+  </tbody>
+</table>
+
+</section>
+<section>
+
+<h2>MIMEヘッダエンコーディングは複雑すぎてつらい</h2>
+
+</section>
+<section>
+
+<p>encoded-word</p>
+
+<p><code>=?charset?b?Base64化文字列?=</code></p>
+
+<p><code>=?charset?q?Qエンコーディング文字列?=</code></p>
+
+</section>
+<section>
+
+<p>「<code>MIMEヘッダエンコーディングは複雑すぎてつらい</code>」</p>
+
+<p>↓</p>
+
+<pre><code class="language-text">Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ikh+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
+</code></pre>
+
+</section>
+<section>
+
+<p>長い</p>
+
+<p>encoded-wordは75バイト以下 (RFC5322)</p>
+
+</section>
+<section>
+
+<p>空白があれば折り返せるけど空白がない</p>
+
+</section>
+<section>
+
+<p>むりやり折り返しちゃだめ</p>
+
+<pre><code class="language-text">Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ikh+m
+ bkeOBmeOBjuOBpuOBpOOCieOBhA==?=
+</code></pre>
+
+<p><strong>文字化け！</strong></p>
+
+</section>
+<section>
+
+<p>複数のencoded-wordとして分割</p>
+
+<pre><code class="language-text">Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ik?=
+ =?utf-8?b?h+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
+</code></pre>
+
+<p>でもこれでも<strong>文字化け！</strong></p>
+
+</section>
+<section>
+
+<p>文字を分割しちゃだめ (RFC2047)</p>
+
+<pre><code class="language-text">=?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ik?=
+</code></pre>
+<p>↓<br>
+<code>MIMEヘッダエンコーディングは</code> + E8 A4</p>
+
+<pre><code class="language-text">=?utf-8?b?h+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
+</code></pre>
+<p>↓</p>
+
+<p>87 + <code>雑すぎてつらい</code></p>
+
+</section>
+<section>
+
+<p>正しい</p>
+
+<pre><code class="language-text">Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+==?=
+ =?utf-8?b?6KSH6ZuR44GZ44GO44Gm44Gk44KJ44GE?=
+</code></pre>
+
+</section>
+<section>
+
+<p>ASCIIと日本語混在</p>
+
+<pre><code class="language-text">Subject: MIME =?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
+</code></pre>
+<p>↓<br>
+<code>MIME ヘッダエンコーディング</code></p>
+
+<p>空白が入る</p>
+
+<p>隣り合ったencoded-wordの間の空白は詰められる</p>
+
+</section>
+<section>
+
+<p>くっつけちゃダメ</p>
+
+<pre><code class="language-text">Subject: MIME=?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
+</code></pre>
+
+</section>
+<section>
+
+<p>ISO-2022-JPはもうちょっと複雑</p>
+
+</section>
+<section>
+
+<p>ISO-2022-JPは複数の文字セットを切り替え</p>
+
+<p>encoded-wordはASCIIで終わらないとダメ (RFC2047)</p>
+
+<p>ASCIIに戻すには 1B 28 42 の3バイト必要</p>
+
+<p>75バイトに納める処理が複雑</p>
+
+</section>
+<section>
+
+<h2>添付ファイル名</h2>
+
+</section>
+<section>
+
+<p>MIME後も添付ファイル名に非ASCIIは使えなかった</p>
+
+</section>
+<section>
+
+<p>ファイル名</p>
+
+<pre><code class="language-text">Content-Type: application/octet-stream;
+  name=filename.ext
+</code></pre>
+
+</section>
+<section>
+
+<p><code>name=</code> の値には <code>=</code>, <code>?</code> が使えない (RFC2045)</p>
+
+<p>つまりencoded-wordが使えない</p>
+
+</section>
+<section>
+
+<p><code>"</code> で括れば <code>=</code>, <code>?</code> も使えるんだけど</p>
+
+<p><code>"</code> で括るとencoded-wordとみなされない (RFC2047)</p>
+
+</section>
+<section>
+
+<p>…はずなんだけど、結構そういう実装ある</p>
+
+<pre><code class="language-text">Content-Type: application/octet-stream;
+  name="=?UTF-8?B?44G744GSLnhscw==?="
+</code></pre>
+
+<p>ホントはダメ</p>
+
+</section>
+<section>
+
+<p>RFC2231 で可能に</p>
+
+<pre><code class="language-text">Content-Type: application/octet-stream;
+  name*=utf-8''%E3%81%BB%E3%81%92.xls
+</code></pre>
+
+<p>MIMEヘッダエンコーディングとはまた別の方式</p>
+
+</section>
+<section>
+
+<p>古い規格に矛盾しないように拡張を重ねてきた</p>
+
+</section>
+<section>
+
+<p>だけど…</p>
+
+</section>
+<section>
+
+<h2>Internationalized Email</h2>
+
+<table>
+  <tbody>
+    <tr>
+      <td>RFC6530</td>
+      <td>Overview and Framework for Internationalized Email</td>
+    </tr>
+    <tr>
+      <td>RFC6531</td>
+      <td>SMTP Extension for Internationalized Email</td>
+    </tr>
+    <tr>
+      <td>RFC6532</td>
+      <td>Internationalized Email Headers</td>
+    </tr>
+    <tr>
+      <td>RFC6533</td>
+      <td>Internationalized Delivery Status and Disposition Notifications</td>
+    </tr>
+  </tbody>
+</table>
+
+</section>
+<section>
+
+<p>メールアドレスとかメールヘッダにUTF-8文字が<br>
+そのまま使える</p>
+
+</section>
+<section>
+
+<h1>文字化けさよなら</h1>
+
+</section>
+<section>
+
+<p>RFCは2012年発行</p>
+
+<p>どれくらい普及してるんだろう</p>
+
+<p>一度ちゃんとRFC読んでみないとなー</p>
+
+</section>
+<section>
+
+<p>おわり</p>
+
 </section>

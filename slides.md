@@ -1,3 +1,32 @@
+## 自己紹介
+
+![](images/icon2.jpg){:style="float:right;width:200px;border:0px"}
+
+* とみたまさひろ
+* 長野在住プログラマー
+
+* Ruby
+* MySQL
+* 文字化け
+
+---
+
+文字化けな話ばっかりやってると
+思われてるかもしれませんが
+実はメールもやってます
+
+---
+
+過去にこんな書籍出したことも
+
+![](images/postfix.jpg)
+
+---
+
+今回はメールの話
+
+---
+
 # メールの文字化け
 
 NSEG #101
@@ -8,111 +37,103 @@ NSEG #101
 
 ---
 
-## 自己紹介
-
-* とみたまさひろ
-* 長野在住プログラマー
-* 得意技
-  * Ruby
-  * MySQL
-  * 文字化け
+その昔メールは7bitデータだった
 
 ---
 
-一般的な文字化けの原因
+ASCII文字しか送れなかった
 
 ---
 
-書き手の文字コードと読み手の文字コードが異なる
+ISO-2022-JPは7bit
+
+お互いが了承してればISO-2022-JPで日本語を使えた
 
 ---
 
-文字コード
+今でもメールでISO-2022-JPが
+使われてるのはその名残り
+
+(もう世の中Unicodeなのに…)
 
 ---
 
-文字集合
+でも日本語が書けるのは本文だけ
 
-文字エンコーディング
+メールのヘッダにはISO-2022-JPは書けない
 
----
-
-文字集合
-
-Character set
-
-文字の集まり
-
-ASCII
-JIS X 0201 / 0208 / 0213
-Windows-31J
-Unicode
+Subjectには書けるけど、From や To には書けない
 
 ---
 
-文字エンコーディング
-
-文字の符号化方式
-
-ISO-2022-JP
-EUC-JP
-SHIFT_JIS
-UTF-8
-UTF-16
-
----
-
-全体的に文字化けする場合
-
----
-
-エンコーディングが異なる
-
-アプリが対応していないエンコーディング
-
----
-
-単純なテキストファイルはエンコーディング情報を持っていない
-
-テキストエディタ等のアプリが推測したり
-
----
-
-ある文字だけ文字化けする場合
-
----
-
-文字集合が異なる
-
-Windows-31J = JIS X 0201 + JIS X 0208 + α
-
----
-
-文字集合のバージョンが異なる
-
-JIS X 0208-1983
-JIS X 0208-1990
-JIS X 0208-1997
-
----
-
-データが壊れている
-
-フォントが対応していない
-
----
-
-メールの場合
-
----
-
-charsetと本文が異なる
-
+```text
+From: "display name" <local@domain.name>
 ```
+
+「`"`」で括ればだいたいのASCII文字は書けるんだけど
+ISO-2022-JPは「`"`」を含んでる
+「`<`」「`>`」も含んでる
+
+`あーいーうー` : `^[$B$"!<$$!<$&!<^[(B`
+
+---
+
+メールヘッダに日本語を書けなかったから
+メール本文の冒頭で名乗る文化が
+生まれたんじゃないかなぁ
+(個人の感想です)
+
+---
+
+MIMEの登場
+
+Multipurpose Internet Mail Extensions
+
+RFC 2045-2049
+
+---
+
+MIME
+
+* ヘッダ部で非ASCII文字
+
+* 添付ファイル(マルチパート)
+
+---
+
+## Charsetの問題
+
+---
+
+Content-Type で文字コードを指定
+
+```text
+Content-Type: text/plain; charset=ISO-2022-JP
+```
+
+---
+
+Charset指定と本文のエンコーディングが異なる
+
+```text
 Content-Type: text/plain; charset=ISO-2022-JP
 
 なぜか本文はSHIFT_JIS
 ```
+
+**文字化け！**
+
+---
+
+Charset指定が無い
+
+```text
+Content-Type: text/plain
+
+ASCIIのはずだけど日本語
+```
+
+**文字化け！**
 
 ---
 
@@ -122,32 +143,221 @@ Subjectが生ISO-2022-JP
 Subject: ^[$B%"%a%s%\@V$$$J$"$$$&$($*^[(B
 ```
 
-MIME以前はこんな感じだった。
+MIME以前
 
 ---
 
-添付ファイル名がMIMEヘッダエンコーディング(RFC2047)
+Charset違い
 
+| メール上のcharset | 実際のエンコーディング |
+|-------------------|------------------------|
+| ISO-2022-JP       | CP50221                |
+| SHIFT_JIS         | CP932                  |
+| EUC-JP            | CP50932                |
+| GB2312            | GBK                    |
+
+---
+
+## MIMEヘッダエンコーディングは複雑すぎてつらい
+
+---
+
+encoded-word
+
+`=?charset?b?Base64化文字列?=`
+
+`=?charset?q?Qエンコーディング文字列?=`
+
+---
+
+「`MIMEヘッダエンコーディングは複雑すぎてつらい`」
+
+↓
+
+```text
+Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ikh+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
 ```
+
+---
+
+長い
+
+encoded-wordは75バイト以下 (RFC5322)
+
+---
+
+空白があれば折り返せるけど空白がない
+
+---
+
+むりやり折り返しちゃだめ
+
+```text
+Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ikh+m
+ bkeOBmeOBjuOBpuOBpOOCieOBhA==?=
+```
+
+**文字化け！**
+
+---
+
+複数のencoded-wordとして分割
+
+```text
+Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ik?=
+ =?utf-8?b?h+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
+```
+
+でもこれでも**文字化け！**
+
+---
+
+文字を分割しちゃだめ (RFC2047)
+
+```text
+=?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ik?=
+```
+↓
+`MIMEヘッダエンコーディングは` + E8 A4
+
+```text
+=?utf-8?b?h+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
+```
+↓
+
+87 + `雑すぎてつらい`
+
+---
+
+正しい
+
+```text
+Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+==?=
+ =?utf-8?b?6KSH6ZuR44GZ44GO44Gm44Gk44KJ44GE?=
+```
+
+---
+
+ASCIIと日本語混在
+
+```text
+Subject: MIME =?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
+```
+↓
+`MIME ヘッダエンコーディング`
+
+空白が入る
+
+隣り合ったencoded-wordの間の空白は詰められる
+
+---
+
+くっつけちゃダメ
+
+```text
+Subject: MIME=?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
+```
+
+---
+
+ISO-2022-JPはもうちょっと複雑
+
+---
+
+ISO-2022-JPは複数の文字セットを切り替え
+
+encoded-wordはASCIIで終わらないとダメ (RFC2047)
+
+ASCIIに戻すには 1B 28 42 の3バイト必要
+
+75バイトに納める処理が複雑
+
+---
+
+## 添付ファイル名
+
+---
+
+MIME後も添付ファイル名に非ASCIIは使えなかった
+
+---
+
+ファイル名
+
+```text
+Content-Type: application/octet-stream;
+  name=filename.ext
+```
+
+---
+
+`name=` の値には `=`, `?` が使えない (RFC2045)
+
+つまりencoded-wordが使えない
+
+---
+
+`"` で括れば `=`, `?` も使えるんだけど
+
+`"` で括るとencoded-wordとみなされない (RFC2047)
+
+---
+
+…はずなんだけど、結構そういう実装ある
+
+```text
 Content-Type: application/octet-stream;
   name="=?UTF-8?B?44G744GSLnhscw==?="
 ```
 
-本当は規約違反。今でも結構ありそう。
-MIME登場後もしばらくは日本語ファイル名をつけられなかった。
+ホントはダメ
 
 ---
 
-ただしくは RFC2231
+RFC2231 で可能に
 
-```
+```text
 Content-Type: application/octet-stream;
   name*=utf-8''%E3%81%BB%E3%81%92.xls
 ```
 
-でもこのRFCにはerrataがあった。
-昔のThunderbirdは間違ってるので実装したりしてた。
+MIMEヘッダエンコーディングとはまた別の方式
 
 ---
 
+古い規格に矛盾しないように拡張を重ねてきた
+
+---
+
+だけど…
+
+---
+
+## Internationalized Email
+
+| RFC6530 | Overview and Framework for Internationalized Email
+| RFC6531 | SMTP Extension for Internationalized Email
+| RFC6532 | Internationalized Email Headers
+| RFC6533 | Internationalized Delivery Status and Disposition Notifications
+
+---
+
+メールアドレスとかメールヘッダにUTF-8文字が
+そのまま使える
+
+---
+
+# 文字化けさよなら
+
+---
+
+RFCは2012年発行
+
+どれくらい普及してるんだろう
+
+一度ちゃんとRFC読んでみないとなー
+
+---
+
+おわり
 
