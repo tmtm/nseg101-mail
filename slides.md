@@ -359,6 +359,8 @@ Content-Type: application/octet-stream;
   name="=?UTF-8?B?44G744GSLnhscw==?="
 ```
 
+文字化けしない
+
 ホントはダメ
 
 ---
