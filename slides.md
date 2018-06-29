@@ -11,8 +11,7 @@
 
 ---
 
-文字化けな話ばっかりやってると
-思われてるかもしれませんが
+文字化けな話ばっかりしてるような気がしますが
 実はメールもやってます
 
 ---
@@ -47,7 +46,7 @@ ASCII文字しか送れなかった
 
 ISO-2022-JPは7bit
 
-お互いが了承してればISO-2022-JPで日本語を使えた
+ISO-2022-JPで日本語を使えた
 
 ---
 
@@ -72,9 +71,9 @@ From: "display name" <local@domain.name>
 
 「`"`」で括ればだいたいのASCII文字は書けるんだけど
 ISO-2022-JPは「`"`」を含んでる
-「`<`」「`>`」も含んでる
+「`@`」「`<`」「`>`」も含んでる
 
-`あーいーうー` : `^[$B$"!<$$!<$&!<^[(B`
+`柊明治` : `^[$BI"L@<#^[(B`
 
 ---
 
@@ -85,7 +84,7 @@ ISO-2022-JPは「`"`」を含んでる
 
 ---
 
-MIMEの登場
+### MIMEの登場
 
 Multipurpose Internet Mail Extensions
 
@@ -93,7 +92,7 @@ RFC 2045-2049
 
 ---
 
-MIME
+### MIME
 
 * ヘッダ部で非ASCII文字
 
@@ -147,12 +146,30 @@ MIME以前
 
 ---
 
-Charset違い
+### Charsetが嘘
+
+本来ISO-2022-JPは次の文字を含まない
+
+* 半角カナ: ｱ ｲ ｳ
+* 丸囲み数字: ① ② ③
+* ローマ数字: Ⅰ Ⅱ Ⅲ
+* 組文字: ㈱ ㌫
+
+---
+
+ISO-2022-JPと名乗っているけど
+みんなが使ってるのは別のエンコーディング
+
+**文字化け！**
+
+---
+
+Charset変換
 
 | メール上のcharset | 実際のエンコーディング |
 |-------------------|------------------------|
 | ISO-2022-JP       | CP50221                |
-| SHIFT_JIS         | CP932                  |
+| SHIFT_JIS         | CP932 (Windows-31J)    |
 | EUC-JP            | CP50932                |
 | GB2312            | GBK                    |
 
@@ -162,11 +179,13 @@ Charset違い
 
 ---
 
-encoded-word
+### encoded-word
 
-`=?charset?b?Base64化文字列?=`
+非ASCII文字をエンコード
 
-`=?charset?q?Qエンコーディング文字列?=`
+`=?charset?B?Base64化文字列?=`
+
+`=?charset?Q?abc=E3=81=82?=`
 
 ---
 
@@ -193,8 +212,8 @@ encoded-wordは75バイト以下 (RFC5322)
 むりやり折り返しちゃだめ
 
 ```text
-Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ikh+m
- bkeOBmeOBjuOBpuOBpOOCieOBhA==?=
+Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+
+ OCsOOBr+ikh+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
 ```
 
 **文字化け！**
@@ -204,8 +223,8 @@ Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ikh+m
 複数のencoded-wordとして分割
 
 ```text
-Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ik?=
- =?utf-8?b?h+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
+Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+OD?=
+ =?utf-8?b?s+OCsOOBr+ikh+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
 ```
 
 でもこれでも**文字化け！**
@@ -215,25 +234,24 @@ Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ik?=
 文字を分割しちゃだめ (RFC2047)
 
 ```text
-=?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ik?=
+=?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+OD?=
 ```
 ↓
-`MIMEヘッダエンコーディングは` + E8 A4
+`MIMEヘッダエンコーディ` + E3 83
 
 ```text
-=?utf-8?b?h+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
+=?utf-8?b?s+OCsOOBr+ikh+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
 ```
 ↓
-
-87 + `雑すぎてつらい`
+B3 + `グは複雑すぎてつらい`
 
 ---
 
 正しい
 
 ```text
-Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+==?=
- =?utf-8?b?6KSH6ZuR44GZ44GO44Gm44Gk44KJ44GE?=
+Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCow==?=
+ =?utf-8?b?44Oz44Kw44Gv6KSH6ZuR44GZ44GO44Gm44Gk44KJ44GE?=
 ```
 
 ---
@@ -241,7 +259,7 @@ Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+==?=
 ASCIIと日本語混在
 
 ```text
-Subject: MIME =?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
+MIME =?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
 ```
 ↓
 `MIME ヘッダエンコーディング`
@@ -255,8 +273,20 @@ Subject: MIME =?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
 くっつけちゃダメ
 
 ```text
-Subject: MIME=?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
+MIME=?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
 ```
+
+繋がってる場合はASCIIも含めてエンコーディング
+
+---
+
+`"` で括ってもダメ
+
+```text
+"MIME =?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?="
+```
+
+`"` で括られた文字列はencoded-wordではない (RFC2047)
 
 ---
 
@@ -264,13 +294,26 @@ ISO-2022-JPはもうちょっと複雑
 
 ---
 
-ISO-2022-JPは複数の文字セットを切り替え
+ISO-2022-JPはエスケープシーケンスで
+複数の文字集合を切り替え
 
-encoded-wordはASCIIで終わらないとダメ (RFC2047)
+| エスケープシーケンス | 文字集合 |
+|----------------------|----------|
+| ESC ( B              | ASCII    |
+| ESC ( J              | JIS X 0201 ラテン文字 |
+| ESC $ @              | JIS X 0208-1978 |
+| ESC $ B              | JIS X 0208-1983 |
+
+---
+
+encoded-wordはASCIIで始まり
+ASCIIで終わらないとダメ (RFC2047)
 
 ASCIIに戻すには 1B 28 42 の3バイト必要
 
 75バイトに納める処理が複雑
+
+でもちゃんとやらないと **文字化け！**
 
 ---
 
@@ -282,7 +325,7 @@ MIME後も添付ファイル名に非ASCIIは使えなかった
 
 ---
 
-ファイル名
+MIMEのファイル名
 
 ```text
 Content-Type: application/octet-stream;

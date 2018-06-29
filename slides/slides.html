@@ -17,8 +17,7 @@
 </section>
 <section>
 
-<p>文字化けな話ばっかりやってると<br>
-思われてるかもしれませんが<br>
+<p>文字化けな話ばっかりしてるような気がしますが<br>
 実はメールもやってます</p>
 
 </section>
@@ -59,7 +58,7 @@
 
 <p>ISO-2022-JPは7bit</p>
 
-<p>お互いが了承してればISO-2022-JPで日本語を使えた</p>
+<p>ISO-2022-JPで日本語を使えた</p>
 
 </section>
 <section>
@@ -86,9 +85,9 @@
 
 <p>「<code>"</code>」で括ればだいたいのASCII文字は書けるんだけど<br>
 ISO-2022-JPは「<code>"</code>」を含んでる<br>
-「<code>&lt;</code>」「<code>&gt;</code>」も含んでる</p>
+「<code>@</code>」「<code>&lt;</code>」「<code>&gt;</code>」も含んでる</p>
 
-<p><code>あーいーうー</code> : <code>^[$B$"!&lt;$$!&lt;$&amp;!&lt;^[(B</code></p>
+<p><code>柊明治</code> : <code>^[$BI"L@&lt;#^[(B</code></p>
 
 </section>
 <section>
@@ -101,7 +100,7 @@ ISO-2022-JPは「<code>"</code>」を含んでる<br>
 </section>
 <section>
 
-<p>MIMEの登場</p>
+<h3>MIMEの登場</h3>
 
 <p>Multipurpose Internet Mail Extensions</p>
 
@@ -110,7 +109,7 @@ ISO-2022-JPは「<code>"</code>」を含んでる<br>
 </section>
 <section>
 
-<p>MIME</p>
+<h3>MIME</h3>
 
 <ul>
   <li>
@@ -171,7 +170,29 @@ ASCIIのはずだけど日本語
 </section>
 <section>
 
-<p>Charset違い</p>
+<h3>Charsetが嘘</h3>
+
+<p>本来ISO-2022-JPは次の文字を含まない</p>
+
+<ul>
+  <li>半角カナ: ｱ ｲ ｳ</li>
+  <li>丸囲み数字: ① ② ③</li>
+  <li>ローマ数字: Ⅰ Ⅱ Ⅲ</li>
+  <li>組文字: ㈱ ㌫</li>
+</ul>
+
+</section>
+<section>
+
+<p>ISO-2022-JPと名乗っているけど<br>
+みんなが使ってるのは別のエンコーディング</p>
+
+<p><strong>文字化け！</strong></p>
+
+</section>
+<section>
+
+<p>Charset変換</p>
 
 <table>
   <thead>
@@ -187,7 +208,7 @@ ASCIIのはずだけど日本語
     </tr>
     <tr>
       <td>SHIFT_JIS</td>
-      <td>CP932</td>
+      <td>CP932 (Windows-31J)</td>
     </tr>
     <tr>
       <td>EUC-JP</td>
@@ -208,11 +229,13 @@ ASCIIのはずだけど日本語
 </section>
 <section>
 
-<p>encoded-word</p>
+<h3>encoded-word</h3>
 
-<p><code>=?charset?b?Base64化文字列?=</code></p>
+<p>非ASCII文字をエンコード</p>
 
-<p><code>=?charset?q?Qエンコーディング文字列?=</code></p>
+<p><code>=?charset?B?Base64化文字列?=</code></p>
+
+<p><code>=?charset?Q?abc=E3=81=82?=</code></p>
 
 </section>
 <section>
@@ -241,8 +264,8 @@ ASCIIのはずだけど日本語
 
 <p>むりやり折り返しちゃだめ</p>
 
-<pre><code class="language-text">Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ikh+m
- bkeOBmeOBjuOBpuOBpOOCieOBhA==?=
+<pre><code class="language-text">Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+
+ OCsOOBr+ikh+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
 </code></pre>
 
 <p><strong>文字化け！</strong></p>
@@ -252,8 +275,8 @@ ASCIIのはずだけど日本語
 
 <p>複数のencoded-wordとして分割</p>
 
-<pre><code class="language-text">Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ik?=
- =?utf-8?b?h+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
+<pre><code class="language-text">Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+OD?=
+ =?utf-8?b?s+OCsOOBr+ikh+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
 </code></pre>
 
 <p>でもこれでも<strong>文字化け！</strong></p>
@@ -263,24 +286,23 @@ ASCIIのはずだけど日本語
 
 <p>文字を分割しちゃだめ (RFC2047)</p>
 
-<pre><code class="language-text">=?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+ik?=
+<pre><code class="language-text">=?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+OD?=
 </code></pre>
 <p>↓<br>
-<code>MIMEヘッダエンコーディングは</code> + E8 A4</p>
+<code>MIMEヘッダエンコーディ</code> + E3 83</p>
 
-<pre><code class="language-text">=?utf-8?b?h+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
+<pre><code class="language-text">=?utf-8?b?s+OCsOOBr+ikh+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
 </code></pre>
-<p>↓</p>
-
-<p>87 + <code>雑すぎてつらい</code></p>
+<p>↓<br>
+B3 + <code>グは複雑すぎてつらい</code></p>
 
 </section>
 <section>
 
 <p>正しい</p>
 
-<pre><code class="language-text">Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+OCsOOBr+==?=
- =?utf-8?b?6KSH6ZuR44GZ44GO44Gm44Gk44KJ44GE?=
+<pre><code class="language-text">Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCow==?=
+ =?utf-8?b?44Oz44Kw44Gv6KSH6ZuR44GZ44GO44Gm44Gk44KJ44GE?=
 </code></pre>
 
 </section>
@@ -288,7 +310,7 @@ ASCIIのはずだけど日本語
 
 <p>ASCIIと日本語混在</p>
 
-<pre><code class="language-text">Subject: MIME =?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
+<pre><code class="language-text">MIME =?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
 </code></pre>
 <p>↓<br>
 <code>MIME ヘッダエンコーディング</code></p>
@@ -302,8 +324,20 @@ ASCIIのはずだけど日本語
 
 <p>くっつけちゃダメ</p>
 
-<pre><code class="language-text">Subject: MIME=?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
+<pre><code class="language-text">MIME=?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
 </code></pre>
+
+<p>繋がってる場合はASCIIも含めてエンコーディング</p>
+
+</section>
+<section>
+
+<p><code>"</code> で括ってもダメ</p>
+
+<pre><code class="language-text">"MIME =?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?="
+</code></pre>
+
+<p><code>"</code> で括られた文字列はencoded-wordではない (RFC2047)</p>
 
 </section>
 <section>
@@ -313,13 +347,47 @@ ASCIIのはずだけど日本語
 </section>
 <section>
 
-<p>ISO-2022-JPは複数の文字セットを切り替え</p>
+<p>ISO-2022-JPはエスケープシーケンスで<br>
+複数の文字集合を切り替え</p>
 
-<p>encoded-wordはASCIIで終わらないとダメ (RFC2047)</p>
+<table>
+  <thead>
+    <tr>
+      <th>エスケープシーケンス</th>
+      <th>文字集合</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ESC ( B</td>
+      <td>ASCII</td>
+    </tr>
+    <tr>
+      <td>ESC ( J</td>
+      <td>JIS X 0201 ラテン文字</td>
+    </tr>
+    <tr>
+      <td>ESC $ @</td>
+      <td>JIS X 0208-1978</td>
+    </tr>
+    <tr>
+      <td>ESC $ B</td>
+      <td>JIS X 0208-1983</td>
+    </tr>
+  </tbody>
+</table>
+
+</section>
+<section>
+
+<p>encoded-wordはASCIIで始まり<br>
+ASCIIで終わらないとダメ (RFC2047)</p>
 
 <p>ASCIIに戻すには 1B 28 42 の3バイト必要</p>
 
 <p>75バイトに納める処理が複雑</p>
+
+<p>でもちゃんとやらないと <strong>文字化け！</strong></p>
 
 </section>
 <section>
@@ -334,7 +402,7 @@ ASCIIのはずだけど日本語
 </section>
 <section>
 
-<p>ファイル名</p>
+<p>MIMEのファイル名</p>
 
 <pre><code class="language-text">Content-Type: application/octet-stream;
   name=filename.ext
