@@ -120,7 +120,7 @@ Content-Type: text/plain; charset=ISO-2022-JP
 なぜか本文はSHIFT_JIS
 ```
 
-**文字化け！**
+**文字化け！**{:class="fragment"}
 
 ---
 
@@ -132,7 +132,7 @@ Content-Type: text/plain
 ASCIIのはずだけど日本語
 ```
 
-**文字化け！**
+**文字化け！**{:class="fragment"}
 
 ---
 
@@ -160,7 +160,9 @@ MIME以前
 ISO-2022-JPと名乗っているけど
 みんなが使ってるのは別のエンコーディング
 
-**文字化け！**
+ISO-2022-JPを信じると…
+
+**文字化け！**{:class="fragment"}
 
 ---
 
@@ -216,7 +218,7 @@ Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+ODs+
  OCsOOBr+ikh+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
 ```
 
-**文字化け！**
+**文字化け！**{:class="fragment"}
 
 ---
 
@@ -227,7 +229,9 @@ Subject: =?utf-8?b?TUlNReODmOODg+ODgOOCqOODs+OCs+ODvOODh+OCo+OD?=
  =?utf-8?b?s+OCsOOBr+ikh+mbkeOBmeOBjuOBpuOBpOOCieOBhA==?=
 ```
 
-でもこれでも**文字化け！**
+でもこれでも
+
+**文字化け！**{:class="fragment"}
 
 ---
 
@@ -290,7 +294,7 @@ MIME=?utf-8?b?44OY44OD44OA44Ko44Oz44Kz44O844OH44Kj44Oz44Kw?=
 
 ---
 
-ISO-2022-JPはもうちょっと複雑
+ISO-2022-JPはさらに複雑
 
 ---
 
@@ -313,7 +317,9 @@ ASCIIに戻すには 1B 28 42 の3バイト必要
 
 75バイトに納める処理が複雑
 
-でもちゃんとやらないと **文字化け！**
+ちゃんとやらないと
+
+**文字化け！**{:class="fragment"}
 
 ---
 
