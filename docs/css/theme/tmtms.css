@@ -153,14 +153,14 @@ body {
   margin: 20px auto;
   text-align: left;
   font-size: 0.7em;
-  font-family: "Migu 1M";
+  font-family: "Migu 1M", monospace;
   line-height: 1.2em;
   word-wrap: break-word;
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.3); }
 
 .reveal code {
   background-color: #eee;
-  font-family: "Migu 1M"; }
+  font-family: "Migu 1M", monospace; }
 
 .reveal pre code {
   display: block;
@@ -169,7 +169,7 @@ body {
   max-height: 400px;
   word-wrap: normal;
   background: #3F3F3F;
-  font-family: "Migu 1M" !important;
+  font-family: "Migu 1M", monospace !important;
   color: #DCDCDC; }
 
 .reveal table {

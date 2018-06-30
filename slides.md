@@ -4,7 +4,8 @@
 
 * とみたまさひろ
 * 長野在住プログラマー
-
+* https://twitter.com/tmtms
+* https://tmtms.hatenablog.com
 * Ruby
 * MySQL
 * 文字化け
@@ -16,9 +17,15 @@
 
 ---
 
-過去にこんな書籍出したことも
+Postfix辞典 (2006)
 
 ![](images/postfix.jpg)
+
+---
+
+Software Design
+
+![](images/softwaredesign.jpg)
 
 ---
 
